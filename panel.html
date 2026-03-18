@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdrianPanel — Login</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #070b14;
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bg {
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, #0d1f3c 0%, #070b14 60%),
+              radial-gradient(ellipse at 80% 20%, #0a1628 0%, transparent 50%);
+  z-index: 0;
+}
+.grid {
+  position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 0;
+}
+.card {
+  background: #0d1422;
+  border: 1px solid #1e2d45;
+  border-radius: 16px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 60px rgba(0,212,255,0.05);
+}
+.logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.logo h1 {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #00d4ff, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -1px;
+}
+.logo p { color: #4a5568; font-size: 13px; margin-top: 4px; }
+.tabs {
+  display: flex;
+  background: #111827;
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 28px;
+}
+.tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a5568;
+  transition: all .2s;
+  border: none;
+  background: none;
+}
+.tab.active {
+  background: #1e2d45;
+  color: #00d4ff;
+}
+.form { display: none; flex-direction: column; gap: 16px; }
+.form.active { display: flex; }
+label { font-size: 12px; color: #94a3b8; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; }
+input {
+  width: 100%;
+  background: #111827;
+  border: 1px solid #1e2d45;
+  border-radius: 10px;
+  padding: 13px 16px;
+  color: #e2e8f0;
+  font-size: 14px;
+  outline: none;
+  transition: border .2s;
+  margin-top: 6px;
+  font-family: inherit;
+}
+input:focus { border-color: #00d4ff; box-shadow: 0 0 0 3px rgba(0,212,255,0.08); }
+.btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #00d4ff, #0099cc);
+  color: #070b14;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .2s, transform .1s;
+  margin-top: 4px;
+}
+.btn:hover { opacity: .9; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.msg {
+  text-align: center;
+  font-size: 13px;
+  padding: 10px;
+  border-radius: 8px;
+  display: none;
+}
+.msg.error { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+.msg.success { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="grid"></div>
+<div class="card">
+  <div class="logo">
+    <h1>⚡ AdrianPanel</h1>
+    <p>Panel de administración de servidores</p>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('login')">Iniciar Sesión</button>
+    <button class="tab" onclick="switchTab('register')">Registrarse</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="form active" id="loginForm">
+    <div>
+      <label>Usuario</label>
+      <input type="text" id="loginUser" placeholder="Tu usuario">
+    </div>
+    <div>
+      <label>Contraseña</label>
+      <input type="password" id="loginPass" placeholder="Tu contraseña">
+    </div>
+    <div class="msg" id="loginMsg"></div>
+    <button class="btn" onclick="login()">Entrar al Panel →</button>
+  </div>
+
+  <!-- REGISTRO -->
+  <div class="form" id="registerForm">
+    <div>
+      <label>Usuario</label>
+      <input type="text" id="regUser" placeholder="Elige un usuario">
+    </div>
+    <div>
+      <label>Contraseña</label>
+      <input type="password" id="regPass" placeholder="Elige una contraseña">
+    </div>
+    <div>
+      <label>Confirmar Contraseña</label>
+      <input type="password" id="regPass2" placeholder="Repite la contraseña">
+    </div>
+    <div class="msg" id="registerMsg"></div>
+    <button class="btn" onclick="register()">Crear Cuenta →</button>
+  </div>
+</div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+  if (tab === 'login') {
+    document.querySelectorAll('.tab')[0].classList.add('active');
+    document.getElementById('loginForm').classList.add('active');
+  } else {
+    document.querySelectorAll('.tab')[1].classList.add('active');
+    document.getElementById('registerForm').classList.add('active');
+  }
+}
+
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'msg ' + type;
+  el.style.display = 'block';
+}
+
+function register() {
+  const user = document.getElementById('regUser').value.trim();
+  const pass = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  if (!user || !pass) return showMsg('registerMsg', 'Completa todos los campos', 'error');
+  if (pass.length < 6) return showMsg('registerMsg', 'La contraseña debe tener mínimo 6 caracteres', 'error');
+  if (pass !== pass2) return showMsg('registerMsg', 'Las contraseñas no coinciden', 'error');
+  const users = JSON.parse(localStorage.getItem('ap_users') || '{}');
+  if (users[user]) return showMsg('registerMsg', 'Ese usuario ya existe', 'error');
+  users[user] = pass;
+  localStorage.setItem('ap_users', JSON.stringify(users));
+  showMsg('registerMsg', '¡Cuenta creada! Ahora inicia sesión', 'success');
+  setTimeout(() => switchTab('login'), 1500);
+}
+
+function login() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  if (!user || !pass) return showMsg('loginMsg', 'Completa todos los campos', 'error');
+  const users = JSON.parse(localStorage.getItem('ap_users') || '{}');
+  if (!users[user]) return showMsg('loginMsg', 'Usuario no encontrado', 'error');
+  if (users[user] !== pass) return showMsg('loginMsg', 'Contraseña incorrecta', 'error');
+  localStorage.setItem('ap_session', user);
+  showMsg('loginMsg', '¡Bienvenido ' + user + '! Cargando...', 'success');
+  setTimeout(() => window.location.href = 'panel.html', 1200);
+}
+
+if (localStorage.getItem('ap_session')) window.location.href = 'panel.html';
+</script>
+</body>
+</html>
+
+
